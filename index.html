@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsBox Embedded App</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+
+<body>
+    <div id="app" class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" :class="{ 'collapsed': sidebarCollapsed }">
+            <div class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                <i class="bi bi-whatsapp me-2 fs-4"></i>
+                <span class="fs-5 sidebar-text">WhatsBox</span>
+            </div>
+            <hr>
+            
+            <!-- User Credentials Form -->
+            <div class="sidebar-content">
+                <h6 class="text-uppercase text-muted mb-3 sidebar-text">
+                    <i class="bi bi-person-circle me-2"></i>User Settings
+                </h6>
+                
+                <div class="mb-3">
+                    <label for="userEmail" class="form-label text-light sidebar-text">
+                        <i class="bi bi-envelope me-1"></i>Email
+                    </label>
+                    <input type="email" class="form-control bg-secondary border-0 text-white" id="userEmail" 
+                           v-model="userCredentials.email" placeholder="Enter your email">
+                </div>
+                
+                <div class="mb-3">
+                    <label for="userName" class="form-label text-light sidebar-text">
+                        <i class="bi bi-person me-1"></i>Name
+                    </label>
+                    <input type="text" class="form-control bg-secondary border-0 text-white" id="userName" 
+                           v-model="userCredentials.name" placeholder="Enter your name">
+                </div>
+                
+                <div class="mb-3">
+                    <label for="userRole" class="form-label text-light sidebar-text">
+                        <i class="bi bi-person-badge me-1"></i>Role
+                    </label>
+                    <select class="form-select bg-secondary border-0 text-white" id="userRole" 
+                            v-model="userCredentials.role">
+                        <option value="User">User</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </div>
+
+                <div class="d-grid gap-2 mb-3">
+                    <button @click="loadToken" class="btn btn-success">
+                        <i class="bi bi-box-arrow-in-right me-1"></i>
+                        <span class="sidebar-text">Load</span>
+                    </button>
+                    <button @click="logout" class="btn btn-outline-danger">
+                        <i class="bi bi-box-arrow-left me-1"></i>
+                        <span class="sidebar-text">Logout</span>
+                    </button>
+                </div>
+            </div>
+
+            <hr>
+            
+            <!-- Console Toggle -->
+            <div class="mt-auto">
+                <button class="btn btn-outline-light w-100 mb-2" @click="toggleConsole">
+                    <i class="bi bi-terminal me-1"></i>
+                    <span class="sidebar-text">{{ showConsole ? 'Hide' : 'Show' }} Console</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-wrapper flex-grow-1 d-flex flex-column">
+            <!-- Top Header Bar -->
+            <header class="header-bar d-flex align-items-center justify-content-between px-3 py-2 bg-white border-bottom">
+                <button class="btn btn-sm btn-outline-secondary" @click="toggleSidebar">
+                    <i class="bi bi-list fs-5"></i>
+                </button>
+                <h5 class="mb-0 text-primary">
+                    <i class="bi bi-chat-dots me-2"></i>WhatsBox Integration
+                </h5>
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-success me-2" v-if="userCredentials.email">
+                        <i class="bi bi-check-circle me-1"></i>Connected
+                    </span>
+                    <span class="badge bg-secondary" v-else>
+                        <i class="bi bi-x-circle me-1"></i>Not Connected
+                    </span>
+                </div>
+            </header>
+
+            <!-- Iframe Container -->
+            <div class="iframe-container flex-grow-1 p-3">
+                <div class="iframe-wrapper h-100 rounded shadow-sm overflow-hidden">
+                    <iframe v-once id="whatsboxIframe" src="https://app-qa.whatsbox.io/embedded" frameborder="0"
+                        class="whatsbox-iframe w-100 h-100" allow="camera; microphone; clipboard-read; clipboard-write"
+                        sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"
+                        @error="onIframeError">
+                    </iframe>
+                </div>
+            </div>
+
+            <!-- Console Section -->
+            <div class="console-section p-3" v-show="showConsole">
+                <div class="card bg-dark text-white">
+                    <div class="card-header d-flex justify-content-between align-items-center py-2">
+                        <h6 class="mb-0">
+                            <i class="bi bi-terminal-fill text-success me-2"></i>Message Console
+                        </h6>
+                        <button @click="clearConsole" class="btn btn-sm btn-outline-light">
+                            <i class="bi bi-trash me-1"></i>Clear
+                        </button>
+                    </div>
+                    <div class="card-body p-2">
+                        <div id="messageConsole" class="message-console">
+                            <div v-for="message in messages" :key="message.id" :class="`message-item message-${message.type}`">
+                                <span class="message-timestamp">[{{ message.timestamp }}]</span>
+                                {{ message.text }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="app.js?v=2"></script>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        OneSignalDeferred.push(async function (OneSignal) {
+            await OneSignal.init({
+                appId: "[your-onesignal-app-id]",
+            });
+        });
+    </script>
+</body>
+
+</html>
