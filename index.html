@@ -16,7 +16,9 @@
 <body>
     <div id="app" class="d-flex">
         <!-- Sidebar -->
-        <div class="sidebar d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" :class="{ 'collapsed': sidebarCollapsed }">
+        <!-- sidebarVisible is only used on small screens to slide the drawer in/out -->
+        <div class="sidebar d-flex flex-column flex-shrink-0 p-3 text-white bg-dark"
+             :class="{ 'collapsed': sidebarCollapsed, 'show': sidebarVisible }">
             <div class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
                 <i class="bi bi-whatsapp me-2 fs-4"></i>
                 <span class="fs-5 sidebar-text">WhatsBox</span>
@@ -80,7 +82,9 @@
         </div>
 
         <!-- Main Content Area -->
-        <div class="main-wrapper flex-grow-1 d-flex flex-column">
+        <!-- clicking outside sidebar should hide it on mobile if it is open -->
+        <div class="main-wrapper flex-grow-1 d-flex flex-column"
+             @click="sidebarVisible = false">
             <!-- Top Header Bar -->
             <header class="header-bar d-flex align-items-center justify-content-between px-3 py-2 bg-white border-bottom">
                 <button class="btn btn-sm btn-outline-secondary" @click="toggleSidebar">

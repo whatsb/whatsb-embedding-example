@@ -11,6 +11,7 @@ createApp({
             showLoading: true,
             isAuthenticated: false,
             sidebarCollapsed: false,
+            sidebarVisible: false, // used for mobile drawer toggle
             showConsole: true
         };
     },
@@ -24,6 +25,14 @@ createApp({
             this.iframe = document.getElementById('whatsboxIframe');
             this.setupMessageListener();
             this.iframe.addEventListener('error', (e) => this.onIframeError(e));
+
+            // hide mobile drawer when resizing back to desktop width
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 768) {
+                    this.sidebarVisible = false;
+                }
+            });
+
             // Fallback timeout
             setTimeout(() => this.hideLoading(), 10000);
         },
@@ -120,7 +129,17 @@ createApp({
         },
 
         toggleSidebar() {
-            this.sidebarCollapsed = !this.sidebarCollapsed;
+            // On small screens the sidebar is a drawer controlled by `sidebarVisible`.
+            // On large screens we just collapse the width.
+            if (window.innerWidth <= 768) {
+                this.sidebarVisible = !this.sidebarVisible;
+                if (this.sidebarVisible) {
+                    // ensure full‑width when visible; avoid conflicting collapsed state
+                    this.sidebarCollapsed = false;
+                }
+            } else {
+                this.sidebarCollapsed = !this.sidebarCollapsed;
+            }
         },
 
         toggleConsole() {

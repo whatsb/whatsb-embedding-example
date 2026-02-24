@@ -164,7 +164,13 @@ body {
     }
 
     .sidebar.show {
-        left: 0;
+        left: 0 !important;
+    }
+
+    /* collapsed state on mobile pushes the bar mostly offscreen; if both
+       `show` and `collapsed` somehow get applied we still want it visible */
+    .sidebar.show.collapsed {
+        left: 0 !important;
     }
 
     .sidebar.collapsed {
