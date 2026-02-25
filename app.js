@@ -99,8 +99,9 @@ createApp({
         },
 
         onIframeError(error) {
-            this.logMessage(`Load error: ${error.message}`, 'error');
-            this.hideLoading();
+            const vm=this;
+            vm.logMessage(`Load error: ${error.message}`, 'error');
+            vm.hideLoading();
         },
 
         sendMessage(msg) {
@@ -112,7 +113,8 @@ createApp({
         },
 
         hideLoading() {
-            this.showLoading = false;
+            const vm=this;
+            vm.showLoading = false;
         },
 
         logMessage(text, type = 'sent') {
@@ -129,26 +131,30 @@ createApp({
         },
 
         toggleSidebar() {
+            const vm=this;
             // On small screens the sidebar is a drawer controlled by `sidebarVisible`.
             // On large screens we just collapse the width.
             if (window.innerWidth <= 768) {
-                this.sidebarVisible = !this.sidebarVisible;
-                if (this.sidebarVisible) {
+                // toggle the drawer visibility rather than always opening it
+                vm.sidebarVisible = !vm.sidebarVisible;
+                if (vm.sidebarVisible) {
                     // ensure full‑width when visible; avoid conflicting collapsed state
-                    this.sidebarCollapsed = false;
+                    vm.sidebarCollapsed = false;
                 }
             } else {
-                this.sidebarCollapsed = !this.sidebarCollapsed;
+                vm.sidebarCollapsed = !vm.sidebarCollapsed;
             }
         },
 
         toggleConsole() {
-            this.showConsole = !this.showConsole;
+            const vm=this;
+            vm.showConsole = !vm.showConsole;
         },
 
         logout() {
-            this.sendMessage({ action: 'logout' });
-            this.logMessage('Logout request sent', 'sent');
+            const vm=this;
+            vm.sendMessage({ action: 'logout' });
+            vm.logMessage('Logout request sent', 'sent');
         }
     }
 }).mount('#app');

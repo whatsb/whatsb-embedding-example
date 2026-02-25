@@ -18,41 +18,44 @@
         <!-- Sidebar -->
         <!-- sidebarVisible is only used on small screens to slide the drawer in/out -->
         <div class="sidebar d-flex flex-column flex-shrink-0 p-3 text-white bg-dark"
-             :class="{ 'collapsed': sidebarCollapsed, 'show': sidebarVisible }">
-            <div class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+            :class="{ 'collapsed': sidebarCollapsed, 'show': sidebarVisible }">
+            <div class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none justify-content-between">
+                <div>
                 <i class="bi bi-whatsapp me-2 fs-4"></i>
-                <span class="fs-5 sidebar-text">WhatsBox</span>
+                <span class="fs-5 sidebar-text">WhatsBox <small>Embed</small></span>
+                </div>
+                <a class="text-white" @click="toggleSidebar"><i class="bi bi-x-lg"></i></a>
             </div>
             <hr>
-            
+
             <!-- User Credentials Form -->
             <div class="sidebar-content">
                 <h6 class="text-uppercase text-muted mb-3 sidebar-text">
                     <i class="bi bi-person-circle me-2"></i>User Settings
                 </h6>
-                
+
                 <div class="mb-3">
                     <label for="userEmail" class="form-label text-light sidebar-text">
                         <i class="bi bi-envelope me-1"></i>Email
                     </label>
-                    <input type="email" class="form-control bg-secondary border-0 text-white" id="userEmail" 
-                           v-model="userCredentials.email" placeholder="Enter your email">
+                    <input type="email" class="form-control bg-secondary border-0 text-white" id="userEmail"
+                        v-model="userCredentials.email" placeholder="Enter your email">
                 </div>
-                
+
                 <div class="mb-3">
                     <label for="userName" class="form-label text-light sidebar-text">
                         <i class="bi bi-person me-1"></i>Name
                     </label>
-                    <input type="text" class="form-control bg-secondary border-0 text-white" id="userName" 
-                           v-model="userCredentials.name" placeholder="Enter your name">
+                    <input type="text" class="form-control bg-secondary border-0 text-white" id="userName"
+                        v-model="userCredentials.name" placeholder="Enter your name">
                 </div>
-                
+
                 <div class="mb-3">
                     <label for="userRole" class="form-label text-light sidebar-text">
                         <i class="bi bi-person-badge me-1"></i>Role
                     </label>
-                    <select class="form-select bg-secondary border-0 text-white" id="userRole" 
-                            v-model="userCredentials.role">
+                    <select class="form-select bg-secondary border-0 text-white" id="userRole"
+                        v-model="userCredentials.role">
                         <option value="User">User</option>
                         <option value="Admin">Admin</option>
                     </select>
@@ -71,7 +74,7 @@
             </div>
 
             <hr>
-            
+
             <!-- Console Toggle -->
             <div class="mt-auto">
                 <button class="btn btn-outline-light w-100 mb-2" @click="toggleConsole">
@@ -83,10 +86,11 @@
 
         <!-- Main Content Area -->
         <!-- clicking outside sidebar should hide it on mobile if it is open -->
-        <div class="main-wrapper flex-grow-1 d-flex flex-column"
-             @click="sidebarVisible = false">
+
+        <div class="main-wrapper flex-grow-1 d-flex flex-column">
             <!-- Top Header Bar -->
-            <header class="header-bar d-flex align-items-center justify-content-between px-3 py-2 bg-white border-bottom">
+            <header
+                class="header-bar d-flex align-items-center justify-content-between px-3 py-2 bg-white border-bottom">
                 <button class="btn btn-sm btn-outline-secondary" @click="toggleSidebar">
                     <i class="bi bi-list fs-5"></i>
                 </button>
@@ -127,7 +131,8 @@
                     </div>
                     <div class="card-body p-2">
                         <div id="messageConsole" class="message-console">
-                            <div v-for="message in messages" :key="message.id" :class="`message-item message-${message.type}`">
+                            <div v-for="message in messages" :key="message.id"
+                                :class="`message-item message-${message.type}`">
                                 <span class="message-timestamp">[{{ message.timestamp }}]</span>
                                 {{ message.text }}
                             </div>
