@@ -48,7 +48,7 @@ createApp({
                 this.sendMessage({ type: 'ack', receivedType: event.data.type });
             }
 
-            const allowedOrigins = ['https://app-qa.whatsbox.io', 'https://app.whatsbox.io', 'http://localhost:3000'];
+            const allowedOrigins = ['https://app.whatsbox.io', 'https://app.whatsbox.io', 'http://localhost:3000'];
             if (!allowedOrigins.some(origin => event.origin.includes(origin.split('//')[1]))) return;
 
             this.logMessage(`Received: ${JSON.stringify(event.data)}`, 'received');

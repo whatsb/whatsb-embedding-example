@@ -102,7 +102,7 @@
             <!-- Iframe Container -->
             <div class="iframe-container flex-grow-1 p-3">
                 <div class="iframe-wrapper h-100 rounded shadow-sm overflow-hidden">
-                    <iframe v-once id="whatsboxIframe" src="https://app-qa.whatsbox.io/embedded" frameborder="0"
+                    <iframe v-once id="whatsboxIframe" src="https://app.whatsbox.io/embedded" frameborder="0"
                         class="whatsbox-iframe w-100 h-100" allow="camera; microphone; clipboard-read; clipboard-write"
                         sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"
                         @error="onIframeError">
@@ -144,6 +144,7 @@
         window.OneSignalDeferred = window.OneSignalDeferred || [];
         OneSignalDeferred.push(async function (OneSignal) {
             await OneSignal.init({
+                // add your onesignle app id here
                 appId: "[your-onesignal-app-id]",
             });
         });

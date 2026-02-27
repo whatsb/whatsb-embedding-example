@@ -72,35 +72,8 @@ app.get('/', (req, res) => {
     res.redirect('/embed');
 });
 
-// API endpoint to validate token
-app.post('/api/validate-token', (req, res) => {
-    const { token } = req.body;
-
-    try {
-        // In a real app, you would validate the JWT token here
-        const decoded = JSON.parse(Buffer.from(token, 'base64').toString());
-
-        if (decoded.exp > Math.floor(Date.now() / 1000)) {
-            res.json({
-                valid: true,
-                user: decoded.user
-            });
-        } else {
-            res.status(401).json({
-                valid: false,
-                message: 'Token expired'
-            });
-        }
-    } catch (error) {
-        res.status(401).json({
-            valid: false,
-            message: 'Invalid token'
-        });
-    }
-});
-
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get('/health', (req, res) => {
     res.json({
         status: 'OK',
         timestamp: new Date().toISOString(),
@@ -158,11 +131,8 @@ app.listen(PORT, () => {
     console.log('\n📋 Available endpoints:');
     console.log('   GET  /                  - Redirects to /embed');
     console.log('   GET  /embed             - Main application');
-    console.log('   POST /api/auth          - Authentication');
-    console.log('   POST /api/validate-token - Token validation');
-    console.log('   GET  /api/user/:id      - User information');
-    console.log('   GET  /api/health        - Health check');
-    console.log('   GET  /get-wa-token      - Get WA token');
+    console.log('   GET  /health        - Health check');
+    console.log('   POST /get-wa-token      - Get WA token');
     console.log('\n💡 Press Ctrl+C to stop the server\n');
 });
 
