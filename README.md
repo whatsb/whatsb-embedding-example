@@ -369,6 +369,8 @@ OneSignalDeferred.push(async function (OneSignal) {
 - Web Push certificate and configuration setup in OneSignal dashboard
 - Browser support for Web Push notifications
 
+> ⚠️ **Required Configuration:** Share your OneSignal App ID and App Key with us at [support@whatsbox.io](mailto:support@whatsbox.io) so we can configure push notifications in your backend.
+
 ---
 
 ## 📡 Message Communication Reference
