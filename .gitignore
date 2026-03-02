@@ -49,3 +49,5 @@ dist/
 
 # Temporary folders
 tmp/
+
+deploy.bat
