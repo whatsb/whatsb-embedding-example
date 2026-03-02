@@ -348,15 +348,26 @@ To extend the integration:
 
 ### Push Notifications (OneSignal)
 
-The app includes OneSignal SDK integration. Configure in `index.html`:
+The app includes OneSignal SDK integration. **You must provide your own OneSignal app ID** to enable push notifications.
+
+**To configure:**
+
+1. Create a OneSignal account and app at [onesignal.com](https://onesignal.com)
+2. Get your OneSignal App ID from your OneSignal dashboard
+3. Update `index.html` with your app ID:
 
 ```javascript
 OneSignalDeferred.push(async function (OneSignal) {
     await OneSignal.init({
-        appId: "[your-onesignal-app-id]",
+        appId: "your-actual-onesignal-app-id", // Replace with your OneSignal App ID
     });
 });
 ```
+
+**Required Environment:**
+- Valid OneSignal account and project
+- Web Push certificate and configuration setup in OneSignal dashboard
+- Browser support for Web Push notifications
 
 ---
 
