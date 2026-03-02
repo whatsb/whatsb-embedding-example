@@ -50,4 +50,4 @@ dist/
 # Temporary folders
 tmp/
 
-deploy.bat
+deploy_whatsb.bat
