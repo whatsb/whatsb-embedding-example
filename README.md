@@ -120,13 +120,16 @@ The iframe must be configured with specific attributes for proper functionality.
 
 **Key Attributes:**
 - `src`: WhatsBox embedded URL (e.g., `https://app.whatsbox.io/embedded`)
+    - Optional query parameter: `theme`
+    - Allowed values: `auto`, `dark`, `light`
+    - Example: `https://app.whatsbox.io/embedded?theme=light`
 - `allow`: Permissions for media and clipboard features
 - `sandbox`: Security restrictions for iframe isolation
 
 ```html
 <iframe 
     id="whatsboxIframe" 
-    src="https://app.whatsbox.io/embedded" 
+    src="https://app.whatsbox.io/embedded?theme=light" 
     frameborder="0"
     allow="camera; microphone; clipboard-read; clipboard-write"
     sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation">
