@@ -1,2 +1,4 @@
-@ECHO  "Deploying WhatsBox Embed to Google Cloud Run..."
+@REM @ECHO  "Deploying WhatsBox Embed to Google Cloud Run..."
 @REM gcloud config set project whatsb-qa && gcloud builds submit --tag gcr.io/whatsb-qa/whatsbox-embed:latest . && gcloud run deploy whatsbox-embed --image gcr.io/whatsb-qa/whatsbox-embed:latest --platform managed --region us-central1 --allow-unauthenticated --project whatsb-qa --env-vars-file=.env
+
+gcloud config set project whatsb && gcloud builds submit --tag gcr.io/whatsb/whatsbox-embed:latest . && gcloud run deploy whatsbox-embed --image gcr.io/whatsb/whatsbox-embed:latest --platform managed --region us-central1 --allow-unauthenticated --project whatsb --env-vars-file=.env
