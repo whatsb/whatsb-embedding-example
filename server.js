@@ -10,15 +10,15 @@ const app = express();
 const PORT = process.env.PORT || 7000;
 
 // external API configuration from environment
-const WA_API_URL = process.env.WA_API_URL;
-const WA_API_KEY = process.env.WA_API_KEY;
+const WB_API_URL = process.env.WB_API_URL;
+const WB_API_KEY = process.env.WB_API_KEY;
 // allow overriding CORS and CSP origins via environment as comma‑separated lists
 const FRAME_ORIGINS = (process.env.FRAME_ORIGINS || "").split(',');
 const CONNECT_ORIGINS = (process.env.CONNECT_ORIGINS || "").split(',');
 
 console.log('Configuration:');
-console.log(`  WA_API_URL: ${WA_API_URL}`);
-console.log(`  WA_API_KEY: ${WA_API_KEY ? '***' : '(not set)'}`);
+console.log(`  WB_API_URL: ${WB_API_URL}`);
+console.log(`  WB_API_KEY: ${WB_API_KEY ? '***' : '(not set)'}`);
 console.log(`  FRAME_ORIGINS: ${FRAME_ORIGINS.join(', ')}`);
 console.log(`  CONNECT_ORIGINS: ${CONNECT_ORIGINS.join(', ')}`);
 
@@ -84,13 +84,13 @@ app.get('/health', (req, res) => {
 // endpoint to get WA token; URL and key come from environment variables
 app.post('/get-wa-token', async (req, res) => {
     try {
-        const tokenEndpoint = `${WA_API_URL}/auth/generate-auth-token`;
+        const tokenEndpoint = `${WB_API_URL}/auth/generate-auth-token`;
         const response = await axios.post(tokenEndpoint, {
             email: req.body.email,
             name: req.body.name,
             role: req.body.role
         }, {
-            headers: { 'x-api-key': WA_API_KEY }
+            headers: { 'x-api-key': WB_API_KEY }
         });
 
         res.json(response.data);

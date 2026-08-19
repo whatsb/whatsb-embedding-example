@@ -73,6 +73,7 @@ body {
 .iframe-wrapper {
     background: white;
     border: 1px solid #dee2e6;
+    position: relative;
 }
 
 .whatsbox-iframe {

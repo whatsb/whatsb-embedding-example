@@ -43,10 +43,10 @@ This project demonstrates how to white-label and embed the WhatsBox application 
 4. Edit `.env` and set your configuration:
    ```dotenv
    # WhatsBox API endpoint
-   WA_API_URL=https://whatsb-api-602145311578.asia-south1.run.app
+   WB_API_URL=https://whatsb-api-602145311578.asia-south1.run.app
 
    # Your secret API key (keep this safe!)
-   WA_API_KEY=sk.your_api_key_here
+   WB_API_KEY=sk.your_api_key_here
 
    # (Optional) Comma-separated origins for CSP frame-src
    FRAME_ORIGINS=https://app.whatsbox.io,https://app.whatsbox.io
@@ -163,13 +163,13 @@ Users log in to *your* system, and your backend generates a WhatsBox token autom
 ```javascript
 app.post('/get-wa-token', async (req, res) => {
     try {
-        const tokenEndpoint = `${process.env.WA_API_URL}/auth/generate-auth-token`;
+        const tokenEndpoint = `${process.env.WB_API_URL}/auth/generate-auth-token`;
         const response = await axios.post(tokenEndpoint, {
             email: req.body.email,
             name: req.body.name,
             role: req.body.role  // 'Admin' or 'User'
         }, {
-            headers: { 'x-api-key': process.env.WA_API_KEY }
+            headers: { 'x-api-key': process.env.WB_API_KEY }
         });
         res.json(response.data);
     } catch (error) {
@@ -276,8 +276,8 @@ gcloud run deploy whatsbox-embed \
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `PORT` | No | Server port (default: 7000, Docker: 8080) |
-| `WA_API_URL` | Yes | WhatsBox API base URL |
-| `WA_API_KEY` | Yes | Your secret API key |
+| `WB_API_URL` | Yes | WhatsBox API base URL |
+| `WB_API_KEY` | Yes | Your secret API key |
 | `FRAME_ORIGINS` | No | Comma-separated CSP frame-src origins |
 | `CONNECT_ORIGINS` | No | Comma-separated CSP connect-src origins |
 
