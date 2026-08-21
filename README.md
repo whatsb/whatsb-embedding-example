@@ -43,16 +43,13 @@ This project demonstrates how to white-label and embed the WhatsBox application 
 4. Edit `.env` and set your configuration:
    ```dotenv
    # WhatsBox API endpoint
-   WB_API_URL=https://whatsb-api-602145311578.asia-south1.run.app
+   WB_API_URL=https://api.whatsbox.io
 
    # Your secret API key (keep this safe!)
    WB_API_KEY=sk.your_api_key_here
 
    # (Optional) Comma-separated origins for CSP frame-src
-   FRAME_ORIGINS=https://app.whatsbox.io,https://app.whatsbox.io
-
-   # (Optional) Comma-separated origins for CSP connect-src
-   CONNECT_ORIGINS=https://whatsb-api-602145311578.asia-south1.run.app
+   FRAME_ORIGINS=https://app.whatsbox.io
    ```
 
 ### Running the Application
