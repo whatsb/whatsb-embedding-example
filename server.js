@@ -12,23 +12,21 @@ const PORT = process.env.PORT || 7000;
 // external API configuration from environment
 const WB_API_URL = process.env.WB_API_URL;
 const WB_API_KEY = process.env.WB_API_KEY;
-// allow overriding CORS and CSP origins via environment as comma‑separated lists
-const FRAME_ORIGINS = (process.env.FRAME_ORIGINS || "").split(',');
-const CONNECT_ORIGINS = (process.env.CONNECT_ORIGINS || "").split(',');
+// allow overriding CSP frame origins via environment as comma‑separated lists
+const FRAME_ORIGINS = (process.env.FRAME_ORIGINS || "").split(',').map(s => s.trim()).filter(Boolean);
 
 console.log('Configuration:');
 console.log(`  WB_API_URL: ${WB_API_URL}`);
 console.log(`  WB_API_KEY: ${WB_API_KEY ? '***' : '(not set)'}`);
-console.log(`  FRAME_ORIGINS: ${FRAME_ORIGINS.join(', ')}`);
-console.log(`  CONNECT_ORIGINS: ${CONNECT_ORIGINS.join(', ')}`);
+if (FRAME_ORIGINS.length > 0) {
+    console.log(`  FRAME_ORIGINS: ${FRAME_ORIGINS.join(', ')}`);
+}
 
 // Middleware
 app.use(cors({
     origin: '*',
     credentials: true
 }));
-// (optionally more restrictive origins could be configured in .env and parsed above)
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -42,15 +40,13 @@ app.use((req, res, next) => {
     res.setHeader('X-Frame-Options', 'SAMEORIGIN');
 
     // Content Security Policy
-    // build CSP directives using environment-configured origins
-    const frameSrc = FRAME_ORIGINS.join(' ');
-    const connectSrc = ['\'self\'', ...CONNECT_ORIGINS].join(' ');
+    const allowedFrameOrigins = ['\'self\'', 'https://app.whatsbox.io', 'https://*.whatsbox.io', ...FRAME_ORIGINS];
     res.setHeader('Content-Security-Policy',
         `default-src 'self'; ` +
-        `script-src 'self' 'unsafe-inline'; ` +
-        `style-src 'self' 'unsafe-inline'; ` +
-        `frame-src ${frameSrc}; ` +
-        `connect-src ${connectSrc}; ` +
+        `script-src 'self' 'unsafe-inline' https:; ` +
+        `style-src 'self' 'unsafe-inline' https:; ` +
+        `frame-src ${allowedFrameOrigins.join(' ')}; ` +
+        `connect-src 'self'; ` +
         `img-src 'self' data: https:;`
     );
 
