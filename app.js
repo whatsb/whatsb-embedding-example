@@ -48,7 +48,6 @@ const app = createApp({
             window.OneSignalDeferred = window.OneSignalDeferred || [];
             window.OneSignalDeferred.push((OneSignal) => {
                 OneSignal.Notifications.addEventListener('click', (event) => {
-                    console.log("event recieved.", event);
                     const additionalData = event.notification?.additionalData;
                     this.handleNotificationClick(additionalData);
                 });
