@@ -156,6 +156,7 @@ If you use OneSignal for web push notifications:
    });
    ```
 3. Share your OneSignal App ID & REST API Key with WhatsBox support to enable push notifications for your workspace.
+4. When a OneSignal notification arrives or is clicked, its payload data (`additionalData` / notification payload) is automatically forwarded via `postMessage` to the WhatsBox iframe.
 
 ---
 

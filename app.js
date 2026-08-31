@@ -1,6 +1,6 @@
 const { createApp } = Vue;
 
-createApp({
+const app = createApp({
     data() {
         return {
             iframe: null,
@@ -13,7 +13,9 @@ createApp({
             isAuthenticated: false,
             sidebarCollapsed: false,
             sidebarVisible: false, // used for mobile drawer toggle
-            showConsole: true
+            showConsole: true,
+            // flag for in-built inbox
+            isInboxReady: false,
         };
     },
 
@@ -25,6 +27,7 @@ createApp({
         init() {
             this.iframe = document.getElementById('whatsboxIframe');
             this.setupMessageListener();
+            this.setupOneSignal();
             if (this.iframe) {
                 this.iframe.addEventListener('error', (e) => this.onIframeError(e));
             }
@@ -39,6 +42,26 @@ createApp({
 
         setupMessageListener() {
             window.addEventListener('message', (event) => this.handleMessage(event));
+        },
+
+        setupOneSignal() {
+            window.OneSignalDeferred = window.OneSignalDeferred || [];
+            window.OneSignalDeferred.push((OneSignal) => {
+                OneSignal.Notifications.addEventListener('click', (event) => {
+                    console.log("event recieved.", event);
+                    const additionalData = event.notification?.additionalData;
+                    this.handleNotificationClick(additionalData);
+                });
+            });
+        },
+
+        handleNotificationClick(additionalData) {
+            if (this.isInboxReady) {
+                this.sendMessage({ action: 'open-thread', data: additionalData });
+            } else {
+                sessionStorage.setItem('onesignalPushData', JSON.stringify(additionalData || {}));
+                this.logMessage('Push notification saved to session (inbox not ready yet)', 'info');
+            }
         },
 
         handleMessage(event) {
@@ -68,46 +91,35 @@ createApp({
 
         processMessage(msg) {
             if (!msg || typeof msg !== 'object') return;
-
             // Stop spinner when message {"type":"embed-login","action":"login","status":"success"} is received
-            if (msg.type === 'embed-login' && msg.action === 'login' && msg.status === 'success') {
+            if (msg.action === 'login' && msg.status === 'success') {
                 this.hideLoading();
                 this.isAuthenticated = true;
-                this.logMessage('Login successful', 'received');
+                return;
+            } else if (msg.action === 'login' && msg.status === 'error') {
+                this.hideLoading();
+                this.isAuthenticated = false;
+                this.isInboxReady = false;
+                return;
+            } else if (msg.action === 'inbox' && msg.status === 'ready') {
+                this.hideLoading();
+                this.isInboxReady = true;
+
+                // Check for pending push notification in sessionStorage
+                const pendingPushData = sessionStorage.getItem('onesignalPushData');
+                console.log(pendingPushData);
+                if (pendingPushData) {
+                    try {
+                        const data = JSON.parse(pendingPushData);
+                        this.sendMessage({ action: 'open-thread', data: data });
+                    } catch (e) {
+                        console.error('Failed to parse pending onesignalPushData', e);
+                    }
+                    sessionStorage.removeItem('onesignalPushData');
+                }
                 return;
             }
 
-            // Fallbacks for other possible status/type messages
-            const msgTypeOrStatus = msg.status || msg.type;
-            switch (msgTypeOrStatus) {
-                case 'auth_request':
-                    this.sendMessage({
-                        type: 'user_credentials',
-                        credentials: { ...this.userCredentials },
-                        timestamp: new Date().toISOString()
-                    });
-                    break;
-                case 'auth_success':
-                    this.isAuthenticated = true;
-                    this.hideLoading();
-                    this.logMessage('Authenticated', 'received');
-                    break;
-                case 'auth_failure':
-                    this.hideLoading();
-                    this.logMessage(`Auth failed: ${msg.reason || 'Unknown'}`, 'error');
-                    break;
-                case 'ready':
-                    this.hideLoading();
-                    break;
-                case 'success':
-                    this.hideLoading();
-                    this.logMessage('Success', 'received');
-                    break;
-                case 'error':
-                    this.hideLoading();
-                    this.logMessage(`Error: ${msg.message || msg.error}`, 'error');
-                    break;
-            }
         },
 
         async loadToken() {
@@ -132,21 +144,21 @@ createApp({
         },
 
         onIframeError(error) {
-            const vm=this;
+            const vm = this;
             vm.logMessage(`Load error: ${error ? (error.message || 'Iframe load failed') : 'Unknown error'}`, 'error');
             vm.hideLoading();
         },
 
         sendMessage(msg) {
             if (this.iframe?.contentWindow) {
-                const targetOrigin = this.iframeOrigin || new URL(this.iframe.src).origin;
-                this.iframe.contentWindow.postMessage(JSON.stringify(msg), "*");
-                this.logMessage(`Sent: ${JSON.stringify(msg)}`, 'sent');
+                const messageStr = typeof msg === 'object' ? JSON.stringify(msg) : msg;
+                this.iframe.contentWindow.postMessage(messageStr, "*");
+                this.logMessage(`Sent: ${messageStr}`, 'sent');
             }
         },
 
         hideLoading() {
-            const vm=this;
+            const vm = this;
             if (vm.loadingTimeout) {
                 clearTimeout(vm.loadingTimeout);
                 vm.loadingTimeout = null;
@@ -168,7 +180,7 @@ createApp({
         },
 
         toggleSidebar() {
-            const vm=this;
+            const vm = this;
             // On small screens the sidebar is a drawer controlled by `sidebarVisible`.
             // On large screens we just collapse the width.
             if (window.innerWidth <= 768) {
@@ -184,14 +196,17 @@ createApp({
         },
 
         toggleConsole() {
-            const vm=this;
+            const vm = this;
             vm.showConsole = !vm.showConsole;
         },
 
         logout() {
-            const vm=this;
+            const vm = this;
             vm.sendMessage({ action: 'logout' });
             vm.logMessage('Logout request sent', 'sent');
         }
     }
-}).mount('#app');
+});
+
+window.app = app.mount('#app');
+
